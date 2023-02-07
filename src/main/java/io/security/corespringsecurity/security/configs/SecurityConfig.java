@@ -1,11 +1,14 @@
 package io.security.corespringsecurity.security.configs;
 
 import jakarta.websocket.Encoder;
+import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
@@ -49,7 +52,7 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests()
-                .requestMatchers("/").permitAll()
+                .requestMatchers("/", "/user").permitAll()
                 .requestMatchers("/mypage").hasRole("USER")
                 .requestMatchers("/message").hasRole("MANAGER")
                 .requestMatchers("/config").hasRole("ADMIN")
@@ -58,6 +61,17 @@ public class SecurityConfig {
         http
                 .formLogin() ;
         return http.build();
+    }
+
+    /**
+     * WebIgnore
+     * : js / css / image 파일 등 보안 필터를 적용할 필요가 없는 리소스를 설정
+     */
+    @Bean
+    WebSecurityCustomizer webSecurityCustomizer() {
+        return web -> {
+            web.ignoring().requestMatchers(PathRequest.toStaticResources().atCommonLocations());
+        };
     }
 
 }

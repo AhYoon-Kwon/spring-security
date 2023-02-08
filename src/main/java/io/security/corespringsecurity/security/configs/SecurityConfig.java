@@ -63,7 +63,12 @@ public class SecurityConfig {
                 .anyRequest().authenticated();
 
         http
-                .formLogin() ;
+                .formLogin()
+                .loginPage("/login")
+                .loginProcessingUrl("/login_proc") //login.html의 form action tag
+                .defaultSuccessUrl("/")
+                .permitAll() //로그인 하지 않은 사용자도 접근이 가능해야 하기 때문에
+        ;
         return http.build();
     }
 

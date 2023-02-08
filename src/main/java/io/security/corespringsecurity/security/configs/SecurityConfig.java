@@ -1,5 +1,6 @@
 package io.security.corespringsecurity.security.configs;
 
+import io.security.corespringsecurity.security.provider.CustomAuthenticationProvider;
 import jakarta.websocket.Encoder;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -27,7 +28,7 @@ public class SecurityConfig {
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 
-    @Bean
+    /*@Bean
     public UserDetailsManager users() {
 
         String password = passwordEncoder().encode("1111");
@@ -49,7 +50,7 @@ public class SecurityConfig {
                 .build();
 
         return new InMemoryUserDetailsManager(user, manager, admin);
-    }
+    }*/
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -74,15 +75,26 @@ public class SecurityConfig {
     WebSecurityCustomizer webSecurityCustomizer() {
         return web -> {
             web.ignoring().requestMatchers(PathRequest.toStaticResources().atCommonLocations());
+            //최초 로그인시 /error로 redirect 되는 문제 해결
+            web.ignoring().requestMatchers("/favicon.ico", "/resources/**", "/error");
         };
     }
 
     /**
-     * AuthenticationManagerBuilder, UserDetailsService 버전 업데이트 후 변경
+     * CustomUserDetailsService
+     * : AuthenticationManagerBuilder, UserDetailsService 버전 업데이트 후 변경
      */
     @Bean
     AuthenticationManager authenticationManager(AuthenticationConfiguration authConfiguration) throws Exception {
         return authConfiguration.getAuthenticationManager();
+    }
+
+    /**
+     * CustomAuthenticationProvider
+     */
+    @Bean
+    public CustomAuthenticationProvider customAuthenticationProvider() {
+        return new CustomAuthenticationProvider();
     }
 
 }

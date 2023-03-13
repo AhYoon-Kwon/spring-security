@@ -21,10 +21,14 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
+    @Autowired
+    private AuthenticationSuccessHandler customAuthenticationSuccessHandler;
 
     @Autowired
     private AuthenticationDetailsSource authenticationDetailsSource;
@@ -74,6 +78,7 @@ public class SecurityConfig {
                 .loginProcessingUrl("/login_proc") //login.html의 form action tag
                 .authenticationDetailsSource(authenticationDetailsSource)
                 .defaultSuccessUrl("/")
+                .successHandler(customAuthenticationSuccessHandler)
                 .permitAll() //로그인 하지 않은 사용자도 접근이 가능해야 하기 때문에
         ;
         return http.build();
